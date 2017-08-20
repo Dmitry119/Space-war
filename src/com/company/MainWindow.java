@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class MainWindow extends JFrame {
 
-    public  static  final double VERSION = 0.25;
+    public  static  final double VERSION = 0.3;
 
     public MainWindow() {
 

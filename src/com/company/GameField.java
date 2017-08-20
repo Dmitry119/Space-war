@@ -6,16 +6,13 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
-
-import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_S;
-import static java.awt.event.KeyEvent.VK_W;
+import static java.awt.event.KeyEvent.*;
 
 public class GameField extends JPanel implements ActionListener{
 
     private final int SPEED = 5;
-    private int shipX, shipY, shipR; // R, T - polar coordinates. x = R*cosT; y = R*sinT
-    private double shipT; // teta - angle
+    private int shipX, shipY; // polar coordinates. x = R*cosT; y = R*sinT
+    private double shipT; // shipT - teta - angle
     private int asteroidX, asteroidY;
     private Image ship;
     private Image asteroid;
@@ -24,7 +21,7 @@ public class GameField extends JPanel implements ActionListener{
     private static  ArrayList<Integer> pressedKeys = new ArrayList<>(); // all pressed buttons; for multiple pressed works
 
     public GameField(){
-        setBackground(Color.black);
+        setBackground(Color.CYAN);
 
         loadImages();
         createShip();
@@ -48,22 +45,29 @@ public class GameField extends JPanel implements ActionListener{
 
     public void initGame(){
         createShip();
-        timer = new Timer(250, this); // activate "actionPerformed" every 250 ms
+        timer = new Timer(5, this); // activate "actionPerformed" every 250 ms
         timer.start();
     }
 
     public void createShip(){
         shipX = 500;
         shipY = 500;
+        shipT = 0;
     }
 
     public void moveShip(){
         // такая система (таймер + actionPerfor from implements ActionListener + ArrayList<Integer> pressedKeys
         // + вот этот метод - позволяет запоминать нажатые и не отпущенные еще клавиши,
         // тем самым обрабатывается сразу нажатие 2+ клавиш. и все пашет)
-        if (isPressed(VK_W)) shipY -= 10;
-        if (isPressed(VK_S)) shipY += 10;
-        if (isPressed(VK_A)) shipX += 10;
+        if (isPressed(VK_W)) {
+            shipY -= (int) Math.round(SPEED * Math.cos(Math.toRadians(shipT)));
+            shipX += (int) Math.round(SPEED * Math.sin(Math.toRadians(shipT)));
+        }
+        if (isPressed(VK_S)) {
+
+        }
+        if (isPressed(VK_A)) shipT -= 2;
+        if (isPressed(VK_D)) shipT += 2;
 
         repaint();
 
@@ -94,36 +98,24 @@ public class GameField extends JPanel implements ActionListener{
 
 
         AffineTransform at = AffineTransform.getTranslateInstance(shipX, shipY); // без new!
-        at.rotate(shipT, ship.getWidth(this) / 2, ship.getHeight(this) /2 );
+        at.rotate(shipT/(180/Math.PI), ship.getWidth(this) / 2, ship.getHeight(this) /2 ); // angle in radianes!
         // at.rotate(shipT) --> rotate around left top corner
         // --> add anchorx/anchory: at.rotate(shipT, ship.getWidth(this) / 2, ship.getHeight(this) /2 );
         // now rotate around center
         // for scale use at.scale
         g2d.drawImage(ship, at, this); // observer - "this", not null !!!
 
-        /* how to rotate...
-        If you are using plain Graphics, cast to Graphics2D first:
+        g2d.drawString("angle (degree) = "+ shipT + " angle in rad = " +shipT*180/Math.PI + "x = " + shipX
+                + "y = " + shipY,50,50);
 
-        Graphics2D g2d = (Graphics2D)g;
-        To rotate an entire Graphics2D:
 
-        g2d.rotate(Math.toRadians(degrees));
-        //draw shape/image (will be rotated)
-        To reset the rotation (so you only rotate one thing):
-
-        AffineTransform old = g2d.getTransform();
-        g2d.rotate(Math.toRadians(degrees));
-        //draw shape/image (will be rotated)
-        g2d.setTransform(old);
-        //things you draw after here will not be rotated
-         */
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         moveShip();
-        System.out.println("actionPerformed");
+        System.out.println("actionPerformed + T / x / y " + shipT + " " + shipX + " " + shipY);
     }
 
 //    @Override // use with implements ActionListener - for timer
