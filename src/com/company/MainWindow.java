@@ -4,10 +4,9 @@ import javax.swing.*;
 
 public class MainWindow extends JFrame {
 
-    public  static  final double VERSION = 0.3;
+    public  static  final double VERSION = 0.31;
 
     public MainWindow() {
-
         setTitle("Space war ver " + VERSION);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1000, 1000);
